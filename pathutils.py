@@ -292,3 +292,7 @@ def show_path_info(path):
     list_all_directories(path['path'])
     print('\nDirectory Tree:')
     display_directory_tree(path['path'])
+
+
+def get_helper_path(helper):
+    return helper['path']
