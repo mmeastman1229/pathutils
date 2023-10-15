@@ -32,7 +32,10 @@ ERROR_NOT_FILE = 'Error: Path is not file'
 ERROR_NOT_PATH_OBJECT = 'Error: Path object required. Use create_path()'
 SEARCH_PATTERN = '*'
 ERROR_NOT_STRING = 'Error: arguments need to be strings'
-
+ERROR_DOES_NOT_EXIST = 'ERROR: Path does not exist. Use create_path() ' \
+                        'Use create_path() to utilize function'
+ERROR_NOT_HELPER = 'Error: Not a helper. ' \
+                    'Run create_helper to utilize function'
 
 def create_path(dir_str):
     path = Path(dir_str)
@@ -45,14 +48,19 @@ def build_helper(path):
         return None
 
     path_dict = dict(path=path
+                     , does_exist=path_exists(path)
                      , name=path.name
+                     , drive=path.drive
+                     , root=path.root
+                     , anchor=path.anchor
                      , stem=path.stem
                      , suffix=path.suffix
                      , parent=path.parent
                      , ptype=get_ptype(path)
                      , parts=get_parts(path)
                      , loc_files=get_local_files(path)
-                     , loc_dirs=get_local_directories(path))
+                     , loc_dirs=get_local_directories(path)
+                     , cwd=path.cwd())
     return path_dict
 
 
@@ -207,6 +215,7 @@ def update_path(path):
     if is_path(path['path']):
         path['loc_files'] = get_local_files(path['path'])
         path['loc_dirs'] = get_local_directories(path['path'])
+        path['does_exist'] = path_exists(path['path'])
     else:
         display_error(ERROR_NOT_PATH_OBJECT)
         return None
@@ -277,9 +286,8 @@ def list_local_dirs(path):
 
 
 def show_path_info(path):
-
     print(f"""Information: {path['path']}
-
+    Path exists: {path['does_exist']}
     Path type: {path['ptype']}
     Name: {path['name']}
     File type: {path['suffix']}
@@ -296,3 +304,7 @@ def show_path_info(path):
 
 def get_helper_path(helper):
     return helper['path']
+
+
+def get_helper_exists(helper):
+    return helper['exists']
