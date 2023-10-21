@@ -24,55 +24,94 @@ ptype = path type (file or directory)
 When importing the file, alias the the library as "putil"
 """
 
-from pathlib import Path
-from pprint import pprint as pp
+from collections import Counter
 from filecmp import cmp
+from pathlib import Path
+from pprint import pprint
 
-ERROR_NOT_FILE = 'Error: Path is not file'
-ERROR_NOT_PATH_OBJECT = 'Error: Path object required. Use create_path()'
-SEARCH_PATTERN = '*'
-ERROR_NOT_STRING = 'Error: arguments need to be strings'
-ERROR_DOES_NOT_EXIST = 'ERROR: Path does not exist. Use create_path() ' \
+ERROR_NOT_FILE = 'ERROR: Not a file.'
+ERROR_NOT_PATH_OBJECT = 'Use create_path("/directory/to/file/or/folder") ' \
+    'or pass Path object directly to function .'
+ERROR_NOT_STRING = 'ERROR: arguments need to be strings'
+ERROR_DOES_NOT_EXIST = 'ERROR: Path does not exist. ' \
                         'Use create_path() to utilize function'
-ERROR_NOT_HELPER = 'Error: Not a helper. ' \
-                    'Run create_helper to utilize function'
+ERROR_NOT_PATH_DICT = 'ERROR: Not a dictionary. ' \
+                    'Run create_path_item_collection(path) to utilize function'
+SEARCH_PATTERN = '*'
 
-def create_path(dir_str):
-    path = Path(dir_str)
-    return path
+def create_path(directory):
+    return Path(directory)
 
 
-def build_helper(path):
-    if not is_path(path):
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
+def create_path_property_collection(path):
 
-    path_dict = dict(path=path
-                     , does_exist=path_exists(path)
-                     , name=path.name
-                     , drive=path.drive
-                     , root=path.root
-                     , anchor=path.anchor
-                     , stem=path.stem
-                     , suffix=path.suffix
-                     , parent=path.parent
-                     , ptype=get_ptype(path)
-                     , parts=get_parts(path)
-                     , loc_files=get_local_files(path)
-                     , loc_dirs=get_local_directories(path)
-                     , cwd=path.cwd())
+    path_properties = dict(
+        path=path
+        , drive=path.drive
+        , root=path.root
+        , anchor=path.anchor
+        , parents=list(path.parents)
+        , name=path.name
+        , suffix=path.suffix
+        , suffixes=path.suffixes
+        , stem=path.stem)
+    
     return path_dict
 
 
-def create_dir(dirname, dirlocation):
+def create_path_fn_collection(path):
+    path_functions = dict(
+        , cwd=path.cwd()
+        , home=path.home()
+        , is_dir=path.is_dir()
+        , is_file=path.is_file()
+        , change_type=path.with_suffix
+        , change_filename=path.with_stem
+        , read_text=path.read_text)
+
+    return path_functions
+
+
+
+
+def add_collection_property(collection):
+    pass
+
+
+
+def add_collection_function(collection)
+    pass
+  
+  if not is_dict(collection):
+      display_error(ERROR_NOT_PATH_DICT)
+      return None
+  
+  if collection['is_dir']:
+    collection['ptype'] = 'directory'
+    collection['files'] = get_files(collection)
+    
+    
+    collection['nested_files'] = get_nested_files(path)
+    collection['nested_dirs'] = get_nested_directories(path)
+    collection['all_dirs_subs'] = get_all_directories(path)
+    collection['all_dir_sub_files'] = get_all_files(path)
+    collection['contents'] = get_all_contents(path)
+    collection['local_type_counts'] = c(p.suffix for p in path.iterdir())
+    collection['all_type_counts'] = c(p.suffix for p in path.rglob('*'))
+        
+    if path_dict['ptype'] == 'file':
+        path_dict['suffix'] = path.suffix
+
+
+def create_subdirectory(dirname, dirlocation):
 
     if not is_path(dirname) and dirlocation is None:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
+      display_error(ERROR_NOT_PATH_OBJECT)
+      return None
 
     # combine the path parts to get a single path
-    if is_string(dirname) and is_string(dirlocation):
-        directory = combine_paths(dirlocation, dirname)
+    if is_string(dirname) and is_string(dirlocation):  
+      directory = combine_paths(dirlocation, dirname)
 
     # create directory object
     directory = create_path(directory)
@@ -90,10 +129,9 @@ def combine_paths(*dirs):
     return path_str
 
 
-def create_local_dir(dir_name):
-    dir_name = Path(Path.cwd() / dir_name)
-    dir_name.mkdir(exist_ok=True)
-    return dir_name
+def create_dir(name):
+    name = Path(Path.cwd() / name)
+    return name.mkdir(exist_ok=True) 
 
 
 def is_path(obj):
@@ -104,7 +142,7 @@ def is_string(obj):
     return isinstance(obj, str)
 
 
-def is_helper(path):
+def is_dict(path):
     return isinstance(path, dict)
 
 
@@ -160,7 +198,7 @@ def get_file_parent(path):
         return None
 
 
-def get_local_directories(path):
+def get_subdirectories(path):
     if is_path(path):
         if is_dir(path):
             return list([item.name for item in path.iterdir() if item.is_dir()])
@@ -172,7 +210,7 @@ def get_local_directories(path):
     return None
 
 
-def get_local_files(path):
+def get_files(path):
     if is_path(path):
         if is_file(path):
             return list([item.name for item in path.iterdir() if item.is_file()])
