@@ -43,71 +43,97 @@ def create_path(directory):
     return Path(directory)
 
 
-def create_path_property_collection(path):
-
-    path_properties = dict(
-        path=path
-        , drive=path.drive
-        , root=path.root
-        , anchor=path.anchor
-        , parents=list(path.parents)
-        , name=path.name
-        , suffix=path.suffix
-        , suffixes=path.suffixes
-        , stem=path.stem)
-    
-    return path_dict
-
-
-def create_path_fn_collection(path):
-    path_functions = dict(
-        , cwd=path.cwd()
-        , home=path.home()
+def create_helper_item_collection(path):
+    properties_and_methods = dict(
+        full_path=path
+        , keys=None
+        , name=path.name 
+        , exists=path.exists()
         , is_dir=path.is_dir()
         , is_file=path.is_file()
+        , ptype=get_ptype(path)
+        , user_home=path.home()
+        , path_cwd=path.cwd()
+        , is_absolute=path.is_absolute()
+        , parents=list(path.parents)
+        , root=path.root
+        , drive=path.drive
+        , anchor=path.anchor # combination of root and drive
+        , stem=path.stem  # name of file without suffix
+        , suffix=path.suffix
+        , suffixes=path.suffixes
+        , parts=path.parts
+        , subdirs=get_subdirs(path)
+        , subdir_count=get_sub
+        , files=get_files(path)
+        , file_count=total_file_count(path)
+        , join=path.joinpath
+        , rename_file=path.with_stem
         , change_type=path.with_suffix
-        , change_filename=path.with_stem
-        , read_text=path.read_text)
+        , change_name_and_type=subdir_count(path)
+        , read_text=path.read_text
+        , read_bytes=path.read_bytes
+        , display_tree=display_directory_tree
+        , info=show_path_info
+        )
+    properties_and_methods['keys'] = get_keys(properties_and_methods)
+    return properties_and_methods
 
-    return path_functions
-
-
-
-
-def add_collection_property(collection):
-    pass
-
-
-
-def add_collection_function(collection)
-    pass
-  
-  if not is_dict(collection):
-      display_error(ERROR_NOT_PATH_DICT)
-      return None
-  
-  if collection['is_dir']:
-    collection['ptype'] = 'directory'
-    collection['files'] = get_files(collection)
-    
-    
-    collection['nested_files'] = get_nested_files(path)
-    collection['nested_dirs'] = get_nested_directories(path)
-    collection['all_dirs_subs'] = get_all_directories(path)
-    collection['all_dir_sub_files'] = get_all_files(path)
-    collection['contents'] = get_all_contents(path)
-    collection['local_type_counts'] = c(p.suffix for p in path.iterdir())
-    collection['all_type_counts'] = c(p.suffix for p in path.rglob('*'))
-        
-    if path_dict['ptype'] == 'file':
-        path_dict['suffix'] = path.suffix
+def get_keys(collection):
+    return [key for key in collection.keys()]
 
 
-def create_subdirectory(dirname, dirlocation):
+def get_collection_path(path):
+    return path['full_path']
 
-    if not is_path(dirname) and dirlocation is None:
-      display_error(ERROR_NOT_PATH_OBJECT)
-      return None
+
+# local file functions
+def get_files(path):
+    files = list([item.name for item in path.iterdir() if item.is_file()])
+    return files
+
+
+def get_file_count(path):
+    return len([item for item in path.iterdir() if item.is_file()])
+
+
+def list_files(path):
+    [print(item.name) for item in path.iterdir() if item.is_file()]
+    return None
+
+# nested file functions
+def get_nested_files(path):
+    return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
+
+
+def get_total_file_count(path):
+    return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_file()])
+
+
+def list_all_files(path):
+    [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
+
+
+
+
+
+
+
+
+def set_ptype_property(collection):
+    if collection['prop']['is_dir']:
+        return 'directory'
+    return 'file'
+
+
+def get_subdirs(path):
+    return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
+
+def list_keys(path_dict):
+    for key in path_dict:
+        print(key)
+
+def create_subdir(dirname, dirlocation):
 
     # combine the path parts to get a single path
     if is_string(dirname) and is_string(dirlocation):  
@@ -122,11 +148,8 @@ def create_subdirectory(dirname, dirlocation):
     return directory
 
 
-def combine_paths(*dirs):
-    path_str = ''
-    for path in dirs:
-        path_str += path + '/'
-    return path_str
+def combine_paths(path):
+    Path.join(path)
 
 
 def create_dir(name):
@@ -146,96 +169,32 @@ def is_dict(path):
     return isinstance(path, dict)
 
 
-def path_exists(path):
-    if is_path(path):
-        return path.exists()
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
-
-
-def is_dir(path):
-    if is_path(path):
-        return True if path.is_dir() else False
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
-
-
-def is_file(path):
-    if is_path(path):
-        return True if path.is_file() else False
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
-
-
-def display_error(error_msg):
+def display_msg(error_msg):
     print(error_msg)
 
 
-def get_component_folders(path):
-    if is_path(path):
-        return list([item for item in path.parts])
+
+def get_path_parts(path):
+    return path.parts
 
 
-def get_ptype(path):
-    if is_path(path):
-        if is_dir(path):
-            return 'directory'
-        else:
-            return 'file'
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
+def get_nested_dirs(path):
+    return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
 
 
-def get_file_parent(path):
-    if is_path(path):
-        return path.parent
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
+def get_nested_files(path):
+    return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
 
 
-def get_subdirectories(path):
-    if is_path(path):
-        if is_dir(path):
-            return list([item.name for item in path.iterdir() if item.is_dir()])
-        else:
-            parent = get_file_parent(path)
-            return list([item.name for item in parent.iterdir() if item.is_dir()])
-
-    display_error(ERROR_NOT_PATH_OBJECT)
-    return None
 
 
-def get_files(path):
-    if is_path(path):
-        if is_file(path):
-            return list([item.name for item in path.iterdir() if item.is_file()])
-        else:
-            parent = get_file_parent(path)
-            return list([item.name for item in parent.iterdir() if item.is_file()])
-    display_error(ERROR_NOT_PATH_OBJECT)
-    return None
+def subdir_count(path):
+    return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_dir()])
 
 
-def get_all_contents(path):
-    if is_path(path):
-        return list([item.name for item in path.rglob(SEARCH_PATTERN)])
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
-
-
-def get_parts(path):
-    if is_path(path):
-        return path.parts
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
-
+def create_dir(name):
+    name = Path(Path.cwd() / name)
+    return name.mkdir(exist_ok=True)  
 
 def set_ptype(path):
     if is_path(path):
@@ -281,12 +240,7 @@ def display_contents(contents):
         print(item)
 
 
-def list_all_files(path):
-    if is_path(path):
-        [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
+
 
 
 def list_all_directories(path):
@@ -305,39 +259,38 @@ def list_all_contents(path):
         return None
 
 
-def list_local_files(path):
-    if is_path(path):
-        if is_file(path):
-            [print(item.name) for item in path.iterdir() if item.is_file()]
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
 
-
-def list_local_dirs(path):
-    if is_path(path):
-        if is_file(path):
-            [print(item.name) for item in path.iterdir() if item.is_dir()]
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
 
 
 def show_path_info(path):
-    print(f"""Information: {path['path']}
-    Path exists: {path['does_exist']}
-    Path type: {path['ptype']}
-    Name: {path['name']}
-    File type: {path['suffix']}
-    Local folders: {path['loc_dirs']}
-    Local files: {path['loc_files']}
+    print(f"""Information:            {path['full_path']}
+    Path exists:                      {path['exists']}
+    Path type:                        {path['ptype']}
+    Name:                             {path['name']}
+    File type:                        {path['suffix']} 
+    Directory parts:                  {path['parts']}
+    Local file count:                 {path['local_file_count']}
+    Local directory count:            {path['local_dir_count']}
+    Total file counts:                {path['total_file_count']}
+    Total directory:                  {path['total_dir_count']} 
     """)
-    print('\nAll Files:')
-    list_all_files(path['path'])
-    print('\nAll Folders:')
-    list_all_directories(path['path'])
-    print('\nDirectory Tree:')
-    display_directory_tree(path['path'])
+   
+    if path['ptype'] == 'directory':
+
+        print("\n\t\t\t\tLocal Folders: \n")
+        list_local_dirs(path)
+        
+        print("\n\t\t\t\tLocal Files: \n")
+        list_local_files(path)
+        
+        print("\n\t\t\t\tAll Files: \n")
+        list_all_files(path)
+        
+        print("\n\t\t\t\tAll Folders: \n")
+        list_all_directories(path)
+        
+    print("\n\t\t\t\t Directory Tree: \n")
+    display_directory_tree(path)
 
 
 def get_helper_path(helper):
