@@ -64,9 +64,9 @@ def create_helper_item_collection(path):
         , suffixes=path.suffixes
         , parts=path.parts
         , subdirs=get_subdirs(path)
-        , subdir_count=get_sub
+        , subdir_count=get_nested_subdir_count(path)
         , files=get_files(path)
-        , file_count=total_file_count(path)
+        , file_count=get_total_file_count(path)
         , join=path.joinpath
         , rename_file=path.with_stem
         , change_type=path.with_suffix
@@ -101,6 +101,20 @@ def list_files(path):
     [print(item.name) for item in path.iterdir() if item.is_file()]
     return None
 
+
+# local folders
+def get_subdirs(path):
+    return [item.name for item in path.iterdir() if item.is_dir()]
+
+
+def get_subdir_count(path):
+    return len([item for item in path.iterdir() if item.is_dir()])
+
+
+def list_subdirs(path):
+    [print(item.name) for item in path.iterdir() if item.is_dir()]
+
+
 # nested file functions
 def get_nested_files(path):
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
@@ -114,9 +128,27 @@ def list_all_files(path):
     [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
 
 
+# Nested Subdirs
+def get_nested_subdirs(path):
+    return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
+
+
+def get_nested_subdir_count(path):
+    return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_dir()])
+
+
+def list_nested_subdirs(path):
+    [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
 
 
 
+
+
+
+
+
+def get_local_dirs(path):
+    return [item.name for item in path.iterdir() if item.is_dir()]
 
 
 
@@ -126,8 +158,7 @@ def set_ptype_property(collection):
     return 'file'
 
 
-def get_subdirs(path):
-    return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
+
 
 def list_keys(path_dict):
     for key in path_dict:
@@ -188,8 +219,7 @@ def get_nested_files(path):
 
 
 
-def subdir_count(path):
-    return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_dir()])
+
 
 
 def create_dir(name):
@@ -239,16 +269,6 @@ def display_contents(contents):
     for item in sorted(contents):
         print(item)
 
-
-
-
-
-def list_all_directories(path):
-    if is_path(path):
-        [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
-    else:
-        display_error(ERROR_NOT_PATH_OBJECT)
-        return None
 
 
 def list_all_contents(path):
