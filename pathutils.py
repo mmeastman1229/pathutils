@@ -29,6 +29,7 @@ from filecmp import cmp
 from pathlib import Path
 from pprint import pprint
 
+
 ERROR_NOT_FILE = 'ERROR: Not a file.'
 ERROR_NOT_PATH_OBJECT = 'Use create_path("/directory/to/file/or/folder") ' \
     'or pass Path object directly to function .'
@@ -39,21 +40,27 @@ ERROR_NOT_PATH_DICT = 'ERROR: Not a dictionary. ' \
                     'Run create_path_item_collection(path) to utilize function'
 SEARCH_PATTERN = '*'
 
+
 def create_path(directory):
     return Path(directory)
 
 
 def create_helper_item_collection(path):
+    
+    lfiles, ldirs = get_local_counts(path)
+    nfiles, ndirs = get_nested_counts(path)
+
     properties_and_methods = dict(
-        full_path=path
+        # Main Path object info
+        path=path
         , keys=None
         , name=path.name 
         , exists=path.exists()
         , is_dir=path.is_dir()
         , is_file=path.is_file()
         , ptype=get_ptype(path)
-        , user_home=path.home()
-        , path_cwd=path.cwd()
+        , home=path.home()
+        , cwd=path.cwd()
         , is_absolute=path.is_absolute()
         , parents=list(path.parents)
         , root=path.root
@@ -63,106 +70,157 @@ def create_helper_item_collection(path):
         , suffix=path.suffix
         , suffixes=path.suffixes
         , parts=path.parts
+        
+        # Files and Folder Info
         , subdirs=get_subdirs(path)
-        , subdir_count=get_nested_subdir_count(path)
         , files=get_files(path)
-        , file_count=get_total_file_count(path)
+        , all_files=get_nested_files(path)
+        , all_dirs=get_nested_subdirs(path)
+        , dir_contents=get_all_contents(path)
+        , total_local_files=lfiles
+        , total_local_dirs=ldirs
+        , total_files=nfiles
+        , total_subdirs=ndirs
+        
+        # Other useful functions
         , join=path.joinpath
         , rename_file=path.with_stem
         , change_type=path.with_suffix
-        , change_name_and_type=subdir_count(path)
+        , change_name_and_type=path.with_name
         , read_text=path.read_text
         , read_bytes=path.read_bytes
         , display_tree=display_directory_tree
         , info=show_path_info
         )
+    
     properties_and_methods['keys'] = get_keys(properties_and_methods)
     return properties_and_methods
 
+
 def get_keys(collection):
-    return [key for key in collection.keys()]
+    return [key for key in collection]
 
 
 def get_collection_path(path):
-    return path['full_path']
+    return path['path']
 
 
 # local file functions
 def get_files(path):
-    files = list([item.name for item in path.iterdir() if item.is_file()])
-    return files
-
+    if is_collection(path):
+        path = get_collection_path(path)
+    
+    return ([item.name for item in path.iterdir() if item.is_file()])
+    
 
 def get_file_count(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     return len([item for item in path.iterdir() if item.is_file()])
 
 
 def list_files(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     [print(item.name) for item in path.iterdir() if item.is_file()]
     return None
 
 
 # local folders
 def get_subdirs(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     return [item.name for item in path.iterdir() if item.is_dir()]
 
 
 def get_subdir_count(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+    
     return len([item for item in path.iterdir() if item.is_dir()])
 
 
 def list_subdirs(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+    
     [print(item.name) for item in path.iterdir() if item.is_dir()]
+    return None
 
 
 # nested file functions
 def get_nested_files(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
 
 
 def get_total_file_count(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_file()])
 
 
 def list_all_files(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
+    return None
 
 
 # Nested Subdirs
 def get_nested_subdirs(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
 
 
 def get_nested_subdir_count(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_dir()])
 
 
 def list_nested_subdirs(path):
+    if is_collection(path):
+        path = get_collection_path(path)
+
     [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
+    return None
 
 
+def get_local_counts(path):
+    files = 0
+    dirs = 0
+    for item in path.iterdir():
+        if path.is_dir():
+            dirs += 1
+        else:
+            files += 1
+    return files, dirs
 
 
-
-
-
-
-def get_local_dirs(path):
-    return [item.name for item in path.iterdir() if item.is_dir()]
-
-
-
-def set_ptype_property(collection):
-    if collection['prop']['is_dir']:
-        return 'directory'
-    return 'file'
-
-
+def get_nested_counts(path):
+    files = 0
+    dirs = 0
+    for item in path.rglob(SEARCH_PATTERN):
+        if path.is_dir():
+            dirs += 1
+        else:
+            files += 1
+    return files, dirs
 
 
 def list_keys(path_dict):
-    for key in path_dict:
-        print(key)
+    [print(key) for keys in path_dict]
 
 def create_subdir(dirname, dirlocation):
 
@@ -204,7 +262,6 @@ def display_msg(error_msg):
     print(error_msg)
 
 
-
 def get_path_parts(path):
     return path.parts
 
@@ -215,10 +272,6 @@ def get_nested_dirs(path):
 
 def get_nested_files(path):
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
-
-
-
-
 
 
 
@@ -270,7 +323,6 @@ def display_contents(contents):
         print(item)
 
 
-
 def list_all_contents(path):
     if is_path(path):
         [print(item.name) for item in path.rglob(SEARCH_PATTERN)]
@@ -279,35 +331,32 @@ def list_all_contents(path):
         return None
 
 
-
-
-
 def show_path_info(path):
-    print(f"""Information:            {path['full_path']}
+    print(f"""Information:            {path['path']}
     Path exists:                      {path['exists']}
     Path type:                        {path['ptype']}
     Name:                             {path['name']}
     File type:                        {path['suffix']} 
     Directory parts:                  {path['parts']}
-    Local file count:                 {path['local_file_count']}
-    Local directory count:            {path['local_dir_count']}
-    Total file counts:                {path['total_file_count']}
-    Total directory:                  {path['total_dir_count']} 
+    Local file count:                 {path['total_local_files']}
+    Local directory count:            {path['total_local_dirs']}
+    Total file counts:                {path['total_files']}
+    Total directory counts:           {path['total_subdirs']} 
     """)
    
     if path['ptype'] == 'directory':
 
         print("\n\t\t\t\tLocal Folders: \n")
-        list_local_dirs(path)
+        list_subdirs(path)
         
         print("\n\t\t\t\tLocal Files: \n")
-        list_local_files(path)
+        list_files(path)
         
         print("\n\t\t\t\tAll Files: \n")
         list_all_files(path)
         
         print("\n\t\t\t\tAll Folders: \n")
-        list_all_directories(path)
+        list_nested_subdirs(path)
         
     print("\n\t\t\t\t Directory Tree: \n")
     display_directory_tree(path)
