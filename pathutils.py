@@ -10,7 +10,7 @@ Path objects.
 
 Path must be imported from the pathlib
 
-After a path is created, all ite components will be added to dictionary
+After a path is created, all ite components will be added to namedtuple
 for easy access.
 
 
@@ -40,84 +40,84 @@ ERROR_DOES_NOT_EXIST = 'ERROR: Path does not exist. ' \
 ERROR_NOT_PATH_DICT = 'ERROR: Not a dictionary. ' \
                     'Run create_path_item_collection(path) to utilize function'
 SEARCH_PATTERN = '*'
+COLLECTION_TYPE = 'namedtuple'
 
 
 PHelper = namedtuple('PHelper', [
-                        'absolute',
-                        'all_dirs',
-                        'all_files',
-                        'anchor',
-                        'as_posix',
-                        'as_uri',
-                        'change_name',
-                        'change_name_and_type',
-                        'change_type',
-                        'chmod',
-                        'cwd',
-                        'dir_contents',
-                        'display_tree',
-                        'drive',
-                        'exists',
-                        'expanduser',
-                        'files',
-                        'glob',
-                        'group',
-                        'hardlink_to',
-                        'home',
-                        'info',
-                        'is_absolute',
-                        'is_block_device',
-                        'is_char_device',
-                        'is_dir',
-                        'is_fifo',
-                        'is_file',
-                        'is_mount',
-                        'is_relative_to',
-                        'is_reserved',
-                        'is_socket',
-                        'is_symlink',
-                        'iterdir',
-                        'joinpath',
-                        'lchmod',
-                        'link_to',
-                        'lstat',
-                        'match',
-                        'mkdir',
-                        'name',
-                        'ndirs',
-                        'nfiles',
-                        'open',
-                        'owner',
-                        'parent',
-                        'parents',
-                        'parts',
-                        'path',
-                        'ptype'
-                        'read_bytes',
-                        'read_text',
-                        'readlink',
-                        'relative_to',
-                        'rename',
-                        'replace',
-                        'resolve',
-                        'rglob',
-                        'rmdir',
-                        'root',
-                        'samefile',
-                        'stat',
-                        'stem',
-                        'subdirs'
-                        'suffix',
-                        'suffixes',
-                        'symlink_to',
-                        'total_lf_cnt',
-                        'total_nf_cnt',
-                        'total_nsdir_cnt'
-                        'total_subdir_cnt',
-                        'touch',
-                        'unlink',
-                        'write_bytes',
-                        'write_text'])
+            'self'
+            ,'exists'
+            ,'is_dir'
+            ,'is_file'
+            ,'parts'
+            ,'drive'
+            ,'root'
+            ,'anchor'
+            ,'parents'
+            ,'parent'
+            ,'name'
+            ,'suffix'
+            ,'suffixes'
+            ,'stem'
+            ,'cwd'
+            ,'home'
+            ,'stats'
+            ,'link_stats'
+            ,'as_posix'
+            ,'as_uri'
+            ,'get_owner'
+            ,'expanduser'
+            ,'is_absolute'
+            ,'is_reserved'
+            ,'is_block_device'
+            ,'is_char_device'
+            ,'is_fifo'
+            ,'is_mount'
+            ,'is_socket'
+            ,'is_symlink'
+            ,'get_linkk'
+            ,'hardlink_to'
+            ,'symlink_to'
+            ,'unlink'
+            ,'resolve'
+            ,'joinpath'
+            ,'match'
+            ,'iterdir'
+            ,'glob'
+            ,'rglob'
+            ,'group'
+            ,'change_name'
+            ,'change_name_and_type'
+            ,'change_type'
+            ,'make_absolute'
+            ,'change_mode'
+            ,'change_link_mode'
+            ,'mkdir'
+            ,'rmdir'
+            ,'open'
+            ,'touch'
+            ,'write_bytes'
+            ,'write_text'
+            ,'read_bytes'
+            ,'read_text'
+            ,'relative_to'
+            ,'rename'
+            ,'replace'
+            ,'samefile'
+            ,'ptype'
+            ,'info'
+            ,'display_tree'
+            ,'dir_contents'
+            ,'subdirs'
+            ,'all_contents'
+            ,'local_dirs'
+            ,'local_files'
+            ,'nested_dirs'
+            ,'nested_files'
+            ,'lfile_total'
+            ,'nfile_total'
+            ,'ndir_total'
+            ,'ldir_total'
+        ])
 
 
 def create_path(directory):
@@ -127,185 +127,207 @@ def create_path(directory):
 def create_helper(path):
 
     path = PHelper(
-             absolute=path.absolute(),
-             all_dirs=get_nested_subdirs,
-             all_files=get_nested_files,
-             anchor=path.anchor,
-             as_posix=path.as_posix,
-             as_uri=path.as_uri,
-             change_name=path.with_stem,
-             change_name_and_type=path.withname,
-             change_type=path.with_suffix,
-             chmod=path.chmod,
-             cwd=path.cwd(),
-             dir_contents=get_all_contents,
-             display_tree=display_directory_tree,
-             drive=path.drive,
-             exists=path.exists(),
-             expanduser=path.expanduser,
-             files=get_files,
-             glob=path.glob,
-             group=path.group,
-             hardlink_to=path.hardlink_to,
-             home=path.home(),
-             info=show_path_info,
-             is_absolute=path.is_absolute(),
-             is_block_device=path.is_block_device(),
-             is_char_device=path.is_char_device(),
-             is_dir=path.is_dir(),
-             is_fifo=path.is_fifo(),
-             is_file=path.is_file(),
-             is_mount=path.is_mount,
-             is_relative_to=path.is_relative_to,
-             is_reserved=path.is_reserved(),
-             is_socket=path.is_socket(),
-             is_symlink=path.is_symlink(),
-             iterdir=path.iterdir,
-             joinpath=path.joinpath,
-             lchmod=path.lchmod,
-             link_to=path.link_to,
-             lstat=path.lstat,
-             match=path.match,
-             mkdir=path.mkdir,
-             name=path.name,
-             ndirs=get_nested_subdirs,
-             nfiles=get_nested_files,
-             open=path.open,
-             owner=path.owner,
-             parent=path.parent,
-             parents=list(path.parents),
-             parts=path.parts,
-             path=path,
-             ptype=get_ptype(path),
-             read_bytes=path.read_bytes,
-             read_text=path.read_text,
-             readlink=path.readlink,
-             relative_to=path.relative_to,
-             rename=path.rename,
-             replace=path.replace,
-             resolve=path.resolve,
-             rglob=path.rglob,
-             rmdir=path.rmdir,
-             root=path.root,
-             samefile=path.samefile,
-             stat=path.stat,
-             stem=path.stem,
-             subdirs=get_subdirs,
-             suffix=path.suffix,
-             suffixes=path.suffixes,
-             symlink_to=path.symlink_to,
-             total_lf_cnt=get_file_count(path),
-             total_nf_cnt=get_nested_subdir_count(path),
-             total_nsdir_cnt= get_nested_subdir_count(path),
-             total_subdir_cnt=ldirs,
-             touch=path.touch,
-             unlink=path.unlink,
-             write_bytes=path.write_bytes,
-             write_text=path.write_text)
+          self=path
+        , exists=path.exists()
+        , is_dir=path.is_dir()
+        , is_file=path.is_file()
+        , parts=path.parts
+        , drive=path.drive
+        , root=path.root
+        , anchor=path.anchor
+        , parents=list(path.parents)
+        , parent=path.parent
+        , name=path.name
+        , suffix=path.suffix
+        , suffixes=path.suffixes
+        , stem=path.stem
+        , cwd=path.cwd()
+        , home=path.home()
+        , stats=path.stat  # returns a stat() object
+        , link_stats=path.lstat
+        , as_posix=path.as_posix
+        , as_uri=path.as_uri
+        , get_owner=path.owner
+        , expanduser=path.expanduser
+        , is_absolute=path.is_absolute()
+        , is_reserved=path.is_reserved`
+        , is_block_device=path.is_block_device()
+        , is_char_device=path.is_char_device()
+        , is_fifo=path.is_fifo()
+        , is_mount=path.is_mount
+        , is_socket=path.is_socket()
+        , is_symlink=path.is_symlink()
+        , get_linkk=path.readlink
+        , hardlink_to=path.hardlink_to
+        , symlink_to=path.symlink_to
+        , unlink=path.unlink
+        , resolve=path.resolve
+        , joinpath=path.joinpath
+        , match=path.match
+        , iterdir=path.iterdir
+        , glob=path.glob
+        , rglob=path.rglob
+        , group=path.group
+        , change_name=path.with_stem
+        , change_name_and_type=path.with_name
+        , change_type=path.with_suffix
+        , make_absolute=path.absolute
+        , change_mode=path.chmod
+        , change_link_mode=path.lchmod
+        , mkdir=path.mkdir
+        , rmdir=path.rmdir
+        , open=path.open
+        , touch=path.touch
+        , write_bytes=path.write_bytes
+        , write_text=path.write_text
+        , read_bytes=path.read_bytes
+        , read_text=path.read_text
+        , relative_to=path.relative_to
+        , rename=path.rename
+        , replace=path.replace
+        , samefile=path.samefile
+
+        # my custom functions
+        , ptype=get_ptype(path)
+        , info=show_path_info
+        , display_tree=display_directory_tree
+        , dir_contents=get_all_contents(path)
+        , subdirs=get_subdirs
+        , all_contents=get_all_contents(path)
+        , local_dirs=get_ldirs(path)
+        , local_files=get_lfiles(path)
+        , nested_dirs=get_ndirs(path)
+        , nested_files=get_nfiles(path)
+        , lfile_total=get_lfile_total(path)
+        , nfile_total=get_nfiles_total(path)
+        , ndir_total=get_ndir_total(path)
+        , ldir_total=get_ldir_total(path)
+    )
     return path
 
+def is_path(obj):
+    return isinstance(obj, Path)
 
-def get_fields(collection):
+
+def is_string(obj):
+    return isinstance(obj, str)
+
+
+def is_collection(path, collection_type):
+    return isinstance(path, collection_type)
+
+
+def get_nondunder_fields(collection):
+    return [field for field in dir(collection) if not field.startswith('__')]
+
+
+def get_all_fields(collection):
     return [field for field in collection._fields]
 
 
-def get_collection_path(collection):
+def get_collection_type_path(collection):
     return collection.path if is_collection(collection)
 
 
+def get_obj_type(obj):
+    return type(obj)
+
+
 # local file functions
-def get_local_files(path):
+def get_lfiles(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     return ([item.name for item in path.iterdir() if item.is_file()])
 
 
-def get_local_file_count(path):
+def get_ldirs(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
+
+    return [item.name for item in path.iterdir() if item.is_dir()]
+
+
+def get_lfile_total(path):
+    if is_collection(path):
+        path = get_collection_type_path(path)
 
     return len([item for item in path.iterdir() if item.is_file()])
 
 
 def list_local_files(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     [print(item.name) for item in path.iterdir() if item.is_file()]
     return None
 
 
 # local folders
-def get_local_subdirs(path):
+
+
+def get_ldir_total(path):
     if is_collection(path):
-        path = get_collection_path(path)
-
-    return [item.name for item in path.iterdir() if item.is_dir()]
-
-
-def get_local_subdir_count(path):
-    if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     return len([item for item in path.iterdir() if item.is_dir()])
 
 
 def list_local_subdirs(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     [print(item.name) for item in path.iterdir() if item.is_dir()]
     return None
 
 
 # nested file functions
-def get_nested_files(path):
+def get_nfiles(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
 
 
-def get_total_file_count(path):
+def get_nfiles_total(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_file()])
 
 
 def list_all_files(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
     return None
 
 
 # Nested Subdirs
-def get_nested_subdirs(path):
+def get_ndirs(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
 
 
-def get_nested_subdir_count(path):
+def get_ndirs_total(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     return len([item for item in path.rglob(SEARCH_PATTERN) if item.is_dir()])
 
 
 def list_nested_subdirs(path):
     if is_collection(path):
-        path = get_collection_path(path)
+        path = get_collection_type_path(path)
 
     [print(item.name) for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
     return None
 
 
-def get_local_counts(path):
+def get_local_totals(path):
     files = 0
     dirs = 0
     for item in path.iterdir():
@@ -316,7 +338,7 @@ def get_local_counts(path):
     return files, dirs
 
 
-def get_nested_counts(path):
+def get_nested_totals(path):
     files = 0
     dirs = 0
     for item in path.rglob(SEARCH_PATTERN):
@@ -351,16 +373,6 @@ def create_dir(name):
     return name.mkdir(exist_ok=True)
 
 
-def is_path(obj):
-    return isinstance(obj, Path)
-
-
-def is_string(obj):
-    return isinstance(obj, str)
-
-
-def is_collection(path):
-    return isinstance(path, namedtuple)
 
 
 def display_msg(error_msg):
@@ -375,7 +387,7 @@ def get_nested_dirs(path):
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_dir()]
 
 
-def get_nested_files(path):
+def get_nfiles(path):
     return [item.name for item in path.rglob(SEARCH_PATTERN) if item.is_file()]
 
 
@@ -387,7 +399,7 @@ def create_dir(name):
 
 def update_path(path):
     if is_path(path['path']):
-        path['loc_files'] = get_local_files(path['path'])
+        path['loc_files'] = get_lfiles(path['path'])
         path['loc_dirs'] = get_local_directories(path['path'])
         path['does_exist'] = path_exists(path['path'])
     else:
@@ -426,31 +438,31 @@ def list_all_contents(path):
 
 
 def show_path_info(collection):
-    print(f"""Information:            {path.path}
-    Path exists:                      {path.exists}
-    Path type:                        {path.ptype}
-    Name:                             {path.name}
-    File type:                        {path.suffix}
-    Directory parts:                  {path.parts}
-    Local file count:                 {path.total_local_files}
-    Local directory count:            {path.total_local_dirs}
-    Total file counts:                {path.total_files}
-    Total directory counts:           {path.total_subdirs}
+    print(f"""Information:            {collection.path}
+    Path exists:                      {collection.exists}
+    Path type:                        {collection.ptype}
+    Name:                             {collection.name}
+    File type:                        {collection.suffix}
+    Directory parts:                  {collection.parts}
+    Local file count:                 {collection.lfile_total}
+    Local directory count:            {collection.total_local_dirs}
+    Total file counts:                {collection.total_files}
+    Total directory counts:           {collection.ldir_total}
     """)
 
     if collection.ptype == 'directory':
 
         print("\n\t\t\t\tLocal Folders: \n")
-        collection.get_local_subdirs(collection.path)
+        collection.get_ldirs(collection.path)
 
         print("\n\t\t\t\tLocal Files: \n")
-        collection.get_local_files(collection.path)
+        collection.get_lfiles(collection.path)
 
         print("\n\t\t\t\tAll Files: \n")
-        collection.get_nested_files(collection.path)
+        collection.get_nfiles(collection.path)
 
         print("\n\t\t\t\tAll Folders: \n")
-        collection.get_nested_subdirs(collection.path)
+        collection.get_ndirs(collection.path)
 
     print("\n\t\t\t\t Directory Tree: \n")
     collection.display_directory_tree(collection.path)
